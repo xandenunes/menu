@@ -5,8 +5,10 @@ import com.hamburgueria.demo.entity.Menu;
 import com.hamburgueria.demo.service.MenuService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -38,9 +40,8 @@ public class MenuController {
         var menu = new Menu();
         try{
             menu = menuService.findById(id);
-
         }catch (Exception e){
-            return ResponseEntity.badRequest().body(e);
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(menu);
     }
@@ -48,10 +49,13 @@ public class MenuController {
 
     @PutMapping(value = "/save/{id}")
     public ResponseEntity updateMenu(@PathVariable Long id, @RequestBody ItemDto menu) {
-        Menu menuAtualizado = new Menu();
+        var menuAtualizado = new Menu();
         try{
             menuAtualizado = menuService.update(id,menu);
-        }catch (Exception e){
+        }catch (ChangeSetPersister.NotFoundException e){
+            return ResponseEntity.notFound().build();
+        }
+        catch (Exception e){
             return ResponseEntity.badRequest().body(e);
         }
         return ResponseEntity.ok(menuAtualizado);

@@ -5,6 +5,7 @@ import com.hamburgueria.demo.entity.Menu;
 import com.hamburgueria.demo.repository.MenuRespository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class MenuService {
     }
 
     public Menu findById(Long id) throws Exception {
-        return menuRespository.findByItemId(id);
+        return menuRespository.findByItemId(id).orElseThrow(ChangeSetPersister.NotFoundException::new);
     }
 
     public void deleteById(Long id) {
